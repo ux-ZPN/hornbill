@@ -1,0 +1,182 @@
+.gallery-page { background: var(--bg-dark); min-height: 100vh; }
+
+.gallery-section { padding: 3rem; }
+
+/* FILTERS */
+.gallery-filters {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(196,130,10,0.2);
+  width: fit-content;
+  flex-wrap: wrap;
+}
+
+.gallery-filter {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 0.6rem 1.3rem;
+  border: none;
+  border-right: 1px solid rgba(196,130,10,0.18);
+  color: var(--cream-dark);
+  background: transparent;
+  opacity: 0.5;
+  transition: all 0.25s;
+}
+
+.gallery-filter:last-child { border-right: none; }
+.gallery-filter--active,
+.gallery-filter:hover { background: var(--ochre); color: #0F0A06; opacity: 1; }
+
+/* MASONRY GRID */
+.gallery-grid {
+  columns: 3;
+  column-gap: 4px;
+}
+
+.gallery-tile {
+  break-inside: avoid;
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+}
+
+.gallery-tile--tall  { aspect-ratio: 3/4; }
+.gallery-tile--wide  { aspect-ratio: 16/9; }
+.gallery-tile--sq    { aspect-ratio: 1/1; }
+
+.gallery-tile svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.gallery-tile:hover svg { transform: scale(1.04); }
+
+.gallery-tile__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,6,3,0.85) 0%, transparent 50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.gallery-tile:hover .gallery-tile__overlay { opacity: 1; }
+
+.gallery-tile__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: var(--cream);
+  font-style: italic;
+}
+
+.gallery-tile__cat {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.85;
+  margin-top: 0.2rem;
+}
+
+/* LIGHTBOX */
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,3,1,0.95);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+.gallery-lightbox__inner {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gallery-lightbox__close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--ochre);
+  background: none;
+  border: 1px solid rgba(196,130,10,0.3);
+  padding: 0.3rem 0.8rem;
+  transition: background 0.2s;
+}
+
+.gallery-lightbox__close:hover { background: rgba(196,130,10,0.15); }
+
+.gallery-lightbox__image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.gallery-lightbox__info {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.gallery-lightbox__cat {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.7;
+}
+
+.gallery-lightbox__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  color: var(--cream);
+  font-style: italic;
+}
+
+.gallery-lightbox__nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gallery-lightbox__btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--cream-dark);
+  background: none;
+  border: 1px solid rgba(196,130,10,0.25);
+  padding: 0.5rem 1.2rem;
+  transition: all 0.25s;
+}
+
+.gallery-lightbox__btn:hover { background: rgba(196,130,10,0.15); color: var(--ochre-light); }
+
+@media (max-width: 900px) {
+  .gallery-section { padding: 2rem 1.5rem; }
+  .gallery-grid    { columns: 2; }
+}
+
+@media (max-width: 500px) {
+  .gallery-grid { columns: 1; }
+}

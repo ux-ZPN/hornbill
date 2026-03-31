@@ -1,0 +1,169 @@
+.tribes-page { background: var(--bg-dark); min-height: 100vh; }
+
+.tribes-grid-section { padding: 4rem 3rem; }
+
+.tribes-grid-intro {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.7;
+  margin-bottom: 2rem;
+}
+
+.tribes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0;
+  border: 1px solid rgba(196,130,10,0.15);
+}
+
+.tribe-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(196,130,10,0.1);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.tribe-card:hover { background: rgba(196,130,10,0.04); }
+.tribe-card--open { background: rgba(196,130,10,0.06); }
+
+.tribe-card__accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--tc, var(--ochre));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+
+.tribe-card:hover .tribe-card__accent,
+.tribe-card--open .tribe-card__accent { transform: scaleX(1); }
+
+.tribe-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.8rem;
+}
+
+.tribe-card__header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.tribe-card__num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.8rem;
+  color: rgba(196,130,10,0.2);
+  font-weight: 900;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tribe-card__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.15rem;
+  color: var(--cream);
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.tribe-card__region {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--tc, var(--ochre));
+  opacity: 0.8;
+}
+
+.tribe-card__chevron {
+  color: var(--ochre);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.tribe-card__body {
+  padding: 0 1.8rem 1.8rem;
+  border-top: 1px solid rgba(196,130,10,0.1);
+  animation: fadeUp 0.4s forwards;
+}
+
+.tribe-card__desc {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--cream-dark);
+  opacity: 0.75;
+  font-weight: 300;
+  margin: 1.2rem 0 1.5rem;
+}
+
+.tribe-card__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tribe-card__meta-item--full { grid-column: 1 / -1; }
+
+.tribe-card__meta-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.tribe-card__meta-val {
+  font-size: 0.95rem;
+  color: var(--cream);
+  font-style: italic;
+}
+
+/* TEXTILE SECTION */
+.tribes-textile {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 320px;
+  align-items: stretch;
+}
+
+.tribes-textile__content {
+  padding: 4rem 3.5rem;
+  background: var(--earth);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tribes-textile__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  color: var(--cream);
+  margin-bottom: 1.5rem;
+}
+
+.tribes-textile__text {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--cream-dark);
+  opacity: 0.78;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.tribes-textile__visual { overflow: hidden; }
+
+@media (max-width: 768px) {
+  .tribes-grid-section { padding: 3rem 1.5rem; }
+  .tribes-grid { grid-template-columns: 1fr; }
+  .tribes-textile { grid-template-columns: 1fr; }
+}

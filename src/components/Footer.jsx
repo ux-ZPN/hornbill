@@ -1,51 +1,59 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import './Footer.css';
 
 export default function Footer() {
-  const navigate = useNavigate();
   return (
-    <>
-      <style>{`
-        .footer-padding { padding: 180px 8%; }
-        .footer-flex { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 60px; margin-bottom: 80px; }
-        .footer-links-wrap { display: flex; gap: 60px; flex-wrap: wrap; }
-        
-        @media (max-width: 768px) {
-          .footer-padding { padding: 80px 6%; }
-          .footer-flex { flex-direction: column; gap: 40px; margin-bottom: 40px; }
-        }
-      `}</style>
-      <footer className="footer-padding" style={{ background: "#0E1224", paddingBottom: "40px" }}>
-         <div className="footer-flex">
-            <div style={{ maxWidth: "400px" }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "clamp(40px, 8vw, 56px)", color: "#E8B4A0", margin: "0 0 20px 0", lineHeight: 1 }}>Hornbill.</h2>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(18px, 3vw, 22px)", color: "rgba(245, 239, 224, 0.6)", lineHeight: 1.5, margin: 0 }}>
-                Organized by the State Tourism and Art & Culture Departments, Government of Nagaland. Designed to preserve, protect, and revive the rich culture of the Nagas.
-              </p>
-            </div>
-            
-            <div className="footer-links-wrap">
-               {[
-                 { title: "Explore", links: [{n: "About", p: "/about"}, {n:"Events", p:"/events"}] },
-                 { title: "Visit", links: [{n: "Tourist Info", p: "/tourist"}, {n:"Contact", p:"/contact"}] }
-               ].map(col => (
-                 <div key={col.title}>
-                   <p style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", letterSpacing: "0.2em", color: "#C4603A", margin: "0 0 20px 0" }}>{col.title.toUpperCase()}</p>
-                   <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                     {col.links.map(l => (
-                       <li key={l.n} style={{ marginBottom: "15px" }}>
-                         <button onClick={() => navigate(l.p)} style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(20px, 4vw, 24px)", color: "#F5EFE0", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.3s", margin: 0 }} onMouseEnter={(e)=>e.target.style.color="#E8B4A0"} onMouseLeave={(e)=>e.target.style.color="#F5EFE0"}>{l.n}</button>
-                       </li>
-                     ))}
-                   </ul>
-                 </div>
-               ))}
-            </div>
-         </div>
-         <div style={{ borderTop: "1px solid rgba(245, 239, 224, 0.1)", paddingTop: "30px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "15px" }}>
-            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "rgba(245, 239, 224, 0.4)", letterSpacing: "0.15em", margin: 0 }}>© 2025 HORNBILLFESTIVAL.COM</p>
-            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "rgba(245, 239, 224, 0.4)", letterSpacing: "0.15em", margin: 0 }}>NAGALAND, INDIA</p>
-         </div>
-      </footer>
-    </>
+    <footer className="footer">
+      <div className="footer__grid">
+
+        <div className="footer__brand-col">
+          <div className="footer__brand">Hornbill Festival</div>
+          <p className="footer__tagline">
+            The Festival of Festivals.<br />
+            Where 17 tribes rise as one<br />
+            every December in Nagaland.
+          </p>
+          <div className="footer__social">
+            {['FB', 'IG', 'TW', 'YT'].map(s => (
+              <a key={s} href="#" className="footer__social-btn">{s}</a>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h4 className="footer__col-head">Navigate</h4>
+          <ul className="footer__links">
+            {[['Home','/'],['The Tribes','/tribes'],['Events','/events'],['Experience','/experience']].map(([label, path]) => (
+              <li key={path}><Link to={path} className="footer__link">{label}</Link></li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="footer__col-head">Plan</h4>
+          <ul className="footer__links">
+            {[['Gallery','/gallery'],['Buy Tickets','/tickets'],['Getting Here','/location'],['Travel Guide','/location']].map(([label, path]) => (
+              <li key={label}><Link to={path} className="footer__link">{label}</Link></li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="footer__col-head">Contact</h4>
+          <ul className="footer__links">
+            {['Media Enquiries','Stall Bookings','Tourism Dept.','Nagaland Govt.'].map(item => (
+              <li key={item}><a href="#" className="footer__link">{item}</a></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="pattern-band" style={{ margin: '2rem 0' }} />
+
+      <div className="footer__bottom">
+        <span className="footer__copy">© 2025 Hornbill Festival · Department of Tourism, Nagaland</span>
+        <span className="footer__copy">Designed with reverence for Naga culture</span>
+      </div>
+    </footer>
   );
 }

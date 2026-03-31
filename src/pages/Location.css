@@ -1,0 +1,185 @@
+.location-page { background: var(--bg-dark); min-height: 100vh; }
+
+/* MAP SECTION */
+.location-map-section {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  min-height: 420px;
+}
+
+.location-map-content {
+  padding: 4rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--earth);
+  border-right: 1px solid rgba(196,130,10,0.15);
+}
+
+.location-map-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  color: var(--cream);
+  margin-bottom: 1.2rem;
+  line-height: 1.1;
+}
+
+.location-map-desc {
+  font-size: 1.02rem;
+  line-height: 1.9;
+  color: var(--cream-dark);
+  opacity: 0.75;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+.location-coords {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.location-coord-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.location-coord-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.7;
+}
+
+.location-coord-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--cream);
+  letter-spacing: 1px;
+}
+
+.location-map-visual { overflow: hidden; }
+
+/* TRAVEL OPTIONS */
+.location-travel { padding: 0 0 3rem; }
+
+.travel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 2rem 3rem 3rem;
+  border-bottom: 1px solid rgba(196,130,10,0.1);
+}
+
+.travel-card {
+  padding: 2rem 1.8rem;
+  border: 1px solid rgba(196,130,10,0.1);
+  transition: background 0.3s;
+}
+
+.travel-card:hover { background: rgba(196,130,10,0.04); }
+
+.travel-card__icon { margin-bottom: 1.2rem; }
+
+.travel-card__mode {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.travel-card__primary {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.05rem;
+  color: var(--cream);
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+}
+
+.travel-card__detail {
+  font-size: 0.93rem;
+  line-height: 1.8;
+  color: var(--cream-dark);
+  opacity: 0.65;
+  font-weight: 300;
+}
+
+/* ESSENTIALS */
+.location-essentials { padding: 0 0 4rem; background: var(--earth); }
+
+.essentials-inner { padding: 3.5rem 3rem 0; }
+
+.essentials-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--cream);
+  margin-bottom: 2rem;
+}
+
+.essentials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 0 3rem 1rem;
+}
+
+.essential-card {
+  padding: 2rem 1.8rem;
+  border: 1px solid rgba(196,130,10,0.1);
+  position: relative;
+  transition: background 0.3s;
+}
+
+.essential-card:hover { background: rgba(196,130,10,0.04); }
+
+.essential-card--warn {
+  border-top: 2px solid var(--ochre);
+}
+
+.essential-card__warn-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ochre);
+  border: 1px solid var(--ochre);
+  padding: 0.2rem 0.6rem;
+  width: fit-content;
+  margin-bottom: 0.8rem;
+}
+
+.essential-card__label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  color: var(--cream);
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+}
+
+.essential-card__detail {
+  font-size: 0.93rem;
+  line-height: 1.8;
+  color: var(--cream-dark);
+  opacity: 0.65;
+  font-weight: 300;
+}
+
+@media (max-width: 1000px) {
+  .location-map-section { grid-template-columns: 1fr; }
+  .location-map-visual   { min-height: 300px; }
+  .travel-grid           { grid-template-columns: 1fr 1fr; }
+  .essentials-grid       { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .location-map-content { padding: 2.5rem 1.5rem; }
+  .travel-grid          { grid-template-columns: 1fr; padding: 1.5rem; }
+  .essentials-grid      { grid-template-columns: 1fr; padding: 0 1.5rem; }
+  .essentials-inner     { padding: 2.5rem 1.5rem 0; }
+}

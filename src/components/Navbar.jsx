@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -52,10 +54,21 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* CTA */}
-      <Link to="/tickets" className="navbar__cta">
-        Book Now
-      </Link>
+      {/* DESKTOP ACTIONS */}
+      <div className="navbar__desktop-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        {user && (
+          <button 
+            className="navbar__link" 
+            onClick={signOut}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', outline: 'none' }}
+          >
+            Sign Out
+          </button>
+        )}
+        <Link to="/tickets" className="navbar__cta">
+          Book Now
+        </Link>
+      </div>
 
       {/* HAMBURGER */}
       <button
@@ -81,6 +94,18 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
+          {user && (
+            <li>
+              <button
+                className="navbar__drawer-link"
+                onClick={() => { signOut(); setMenuOpen(false); }}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', outline: 'none' }}
+              >
+                <span className="navbar__drawer-num">{String(NAV_LINKS.length + 1).padStart(2, '0')}</span>
+                SIGN OUT
+              </button>
+            </li>
+          )}
         </ul>
         <div className="navbar__drawer-footer">
           <span>Dec 1–10 · Kisama Village · Nagaland</span>

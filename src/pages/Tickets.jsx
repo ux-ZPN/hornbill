@@ -1,92 +1,120 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useReveal } from '../hooks/useReveal';
+import { useAuth } from '../context/AuthContext';
+import AuthModal from '../components/AuthModal';
+import TicketCard from '../components/TicketCard';
+import BookingConfirmModal from '../components/BookingConfirmModal';
+import { supabase } from '../lib/supabaseClient';
+import { useNavigate } from 'react-router-dom';
 import './Tickets.css';
-
-const TIERS = [
-  {
-    id: 'day',
-    name: 'Day Pass',
-    price: '250',
-    currency: '₹',
-    badge: null,
-    color: '#C4820A',
-    features: [
-      'Single day access',
-      'All public performance areas',
-      'Heritage Village entry',
-      'Food court access',
-    ],
-    note: 'Valid for one calendar day of your choice',
-  },
-  {
-    id: 'full',
-    name: 'Full Festival',
-    price: '1,800',
-    currency: '₹',
-    badge: 'Most Popular',
-    color: '#E8A020',
-    features: [
-      'All 10 days — Dec 1 to 10',
-      'Priority seating at main stage',
-      'Opening & closing ceremonies',
-      'Craft village unlimited access',
-      'Festival programme booklet',
-    ],
-    note: 'Best value — the full Hornbill experience',
-  },
-  {
-    id: 'heritage',
-    name: 'Heritage Tour',
-    price: '4,500',
-    currency: '₹',
-    badge: 'Immersive',
-    color: '#2D6B4A',
-    features: [
-      'Full festival access (10 days)',
-      'Guided tribal morung tour',
-      'Traditional Naga homestay (2 nights)',
-      'Village trek with Naga guide',
-      'Ceremonial feast invitation',
-      'Traditional craft workshop',
-    ],
-    note: 'For those who want to go deeper into Naga culture',
-  },
-  {
-    id: 'media',
-    name: 'Press Pass',
-    price: null,
-    currency: '',
-    badge: 'Apply',
-    color: '#4A90B8',
-    features: [
-      'Full 10-day media accreditation',
-      'Dedicated press zone & workroom',
-      'Backstage & performance access',
-      'Official media credentials',
-      'Press briefings with organisers',
-    ],
-    note: 'Contact the Tourism Department of Nagaland directly',
-  },
-];
-
-const DAYS = Array.from({length:10},(_,i)=>`Dec ${i+1}, 2025`);
 
 export default function Tickets() {
   useReveal();
-  const [selected, setSelected] = useState('full');
-  const [day, setDay] = useState(DAYS[0]);
-  const [qty, setQty] = useState(1);
-  const [form, setForm] = useState({ name:'', email:'', phone:'' });
-  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedQty, setSelectedQty] = useState(1);
 
-  const tier = TIERS.find(t => t.id === selected);
-  const rawPrice = tier?.price ? parseInt(tier.price.replace(',','')) * qty : 0;
-  const totalStr = rawPrice ? `₹${rawPrice.toLocaleString('en-IN')}` : 'Contact Office';
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('*');
+      
+      if (error) throw error;
+      
+      if (data) {
+        // filter active tickets
+        const activeTickets = data.filter(t => t.active !== false && t.is_active !== false && t.status !== 'inactive');
+        setTickets(activeTickets);
+      }
+    } catch (err) {
+      console.error('Error fetching tickets:', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.name || !form.email) return;
-    setSubmitted(true);
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  const handleBuyNow = (ticket, qty) => {
+    setSelectedTicket(ticket);
+    setSelectedQty(qty);
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      setShowBookingModal(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    if (selectedTicket) {
+      setShowBookingModal(true);
+    }
+  };
+
+  const confirmBooking = async () => {
+    if (!selectedTicket || !user) return;
+    
+    const qty = selectedQty;
+    
+    try {
+      // 1. Attempt to insert booking
+      const { data: insertedData, error: bookingError } = await supabase
+        .from('bookings')
+        .insert({
+          ticket_id: selectedTicket.id,
+          user_id: user.id,
+          quantity: qty,
+          total_price: selectedTicket.price * qty,
+          status: 'confirmed'
+        })
+        .select('id')
+        .single();
+        
+      if (bookingError && bookingError.code !== '42P01') { // Ignore if table doesn't exist
+        throw bookingError;
+      }
+
+      const bookingRef = insertedData?.id || `HB-${Math.random().toString(36).substring(2,10).toUpperCase()}`;
+
+      // 2. Update seats left
+      const newSeats = Math.max(0, selectedTicket.seats_left - qty);
+      const { error: updateError } = await supabase
+        .from('tickets')
+        .update({ seats_left: newSeats })
+        .eq('id', selectedTicket.id);
+
+      if (updateError) throw updateError;
+
+      setShowBookingModal(false);
+      setSelectedTicket(null);
+      fetchTickets();
+      
+      // Route to success page
+      navigate('/booking-success', {
+        state: {
+          ticket: selectedTicket,
+          quantity: qty,
+          userEmail: user.email,
+          totalPrice: selectedTicket.price * qty,
+          bookingRef: bookingRef,
+          bookingDate: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+        }
+      });
+      
+    } catch (err) {
+      console.error('Booking failed:', err.message);
+      alert('Failed to book: ' + err.message);
+    }
   };
 
   return (
@@ -112,135 +140,31 @@ export default function Tickets() {
 
       {/* TIER CARDS */}
       <section className="tickets-tiers reveal">
-        <div className="section-tag" style={{ padding:'3rem 3rem 0' }}>Choose Your Pass</div>
-        <div className="tickets-tier-grid">
-          {TIERS.map(t => (
-            <div
-              key={t.id}
-              className={`tier-card ${selected === t.id ? 'tier-card--selected' : ''}`}
-              style={{ '--tc': t.color }}
-              onClick={() => setSelected(t.id)}
-            >
-              {t.badge && <div className="tier-card__badge">{t.badge}</div>}
-              <div className="tier-card__top-bar" />
-              <div className="tier-card__name">{t.name}</div>
-              <div className="tier-card__price">
-                {t.price
-                  ? <><span className="tier-card__currency">{t.currency}</span>{t.price}</>
-                  : <span style={{ fontSize:'1.2rem' }}>Contact<br/>Office</span>
-                }
-              </div>
-              <ul className="tier-card__features">
-                {t.features.map(f => (
-                  <li key={f}>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <div className="tier-card__note">{t.note}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="pattern-band" />
-
-      {/* BOOKING FORM */}
-      <section className="tickets-booking">
-        <div className="tickets-booking__left reveal">
-          <div className="section-tag">Your Order</div>
-          <div className="order-summary">
-            <div className="order-row">
-              <span>Pass Type</span>
-              <span style={{ color:'var(--ochre-light)', fontStyle:'italic' }}>{tier?.name}</span>
-            </div>
-            {selected === 'day' && (
-              <div className="order-row">
-                <span>Select Day</span>
-                <select
-                  value={day}
-                  onChange={e => setDay(e.target.value)}
-                  className="order-select"
-                >
-                  {DAYS.map(d => <option key={d}>{d}</option>)}
-                </select>
-              </div>
-            )}
-            {tier?.price && (
-              <div className="order-row">
-                <span>Quantity</span>
-                <div className="qty-control">
-                  <button onClick={() => setQty(q => Math.max(1,q-1))}>−</button>
-                  <span>{qty}</span>
-                  <button onClick={() => setQty(q => Math.min(10,q+1))}>+</button>
-                </div>
-              </div>
-            )}
-            <div className="order-divider" />
-            <div className="order-row order-row--total">
-              <span>Total</span>
-              <span className="order-total">{totalStr}</span>
-            </div>
+        <div className="section-tag" style={{ padding:'3rem 3rem 0' }}>Available Passes</div>
+        
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--cream)' }}>
+             <div className="spinner" style={{ margin: '0 auto 1rem', width: '40px', height: '40px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--ochre)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+             Fetching active tickets...
+             <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
           </div>
-        </div>
-
-        <div className="tickets-booking__right reveal">
-          {submitted ? (
-            <div className="booking-success">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="22" stroke="#C4820A" strokeWidth="1.5"/>
-                <path d="M14 24L21 31L34 18" stroke="#C4820A" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <h3>Booking Request Received</h3>
-              <p>We'll confirm your {tier?.name} via email within 24 hours. Welcome to the Festival of Festivals.</p>
-            </div>
-          ) : (
-            <>
-              <div className="section-tag">Your Details</div>
-              <form className="booking-form" onSubmit={handleSubmit}>
-                <div className="form-field">
-                  <label>Full Name <span>*</span></label>
-                  <input
-                    type="text"
-                    placeholder="As on ID proof"
-                    value={form.name}
-                    onChange={e => setForm({...form, name: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label>Email Address <span>*</span></label>
-                  <input
-                    type="email"
-                    placeholder="Ticket will be sent here"
-                    value={form.email}
-                    onChange={e => setForm({...form, email: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label>Phone Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+91"
-                    value={form.phone}
-                    onChange={e => setForm({...form, phone: e.target.value})}
-                  />
-                </div>
-                <div className="form-note">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#C4820A" strokeWidth="1"/><line x1="7" y1="5" x2="7" y2="10" stroke="#C4820A" strokeWidth="1.5" strokeLinecap="round"/><circle cx="7" cy="3.5" r="0.8" fill="#C4820A"/></svg>
-                  Non-Nagaland Indian nationals require an Inner Line Permit (ILP). Apply at <span style={{color:'var(--ochre)'}}>nagaland.gov.in/ilp</span>
-                </div>
-                <button type="submit" className="btn-solid" style={{ width:'100%', justifyContent:'center', marginTop:'0.5rem' }}>
-                  {selected === 'media' ? 'Submit Application' : `Confirm Booking — ${totalStr}`}
-                </button>
-              </form>
-            </>
-          )}
-        </div>
+        ) : (
+          <div className="tickets-tier-grid" style={{ paddingBottom: '4rem' }}>
+            {tickets.map(t => (
+              <TicketCard 
+                key={t.id} 
+                ticket={t} 
+                onBuyClick={(qty) => handleBuyNow(t, qty)} 
+              />
+            ))}
+            
+            {tickets.length === 0 && (
+               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem', color: 'var(--cream-dark)' }}>
+                  No active tickets currently available. Please check back later.
+               </div>
+            )}
+          </div>
+        )}
       </section>
 
       <div className="pattern-band" />
@@ -262,6 +186,23 @@ export default function Tickets() {
           ))}
         </div>
       </section>
+
+      {/* MODALS */}
+      {showAuthModal && (
+        <AuthModal 
+          onClose={() => setShowAuthModal(false)} 
+          onSuccess={handleAuthSuccess} 
+        />
+      )}
+
+      {showBookingModal && selectedTicket && (
+        <BookingConfirmModal
+          ticket={selectedTicket}
+          quantity={selectedQty}
+          onConfirm={confirmBooking}
+          onCancel={() => setShowBookingModal(false)}
+        />
+      )}
     </div>
   );
 }

@@ -80,7 +80,7 @@ export default function Tribes() {
                 </svg>
               </div>
               {active === t.num && (
-                <div className="tribe-card__body">
+                <div className="tribe-card__body" onClick={(e) => e.stopPropagation()}>
                   <p className="tribe-card__desc">{t.desc}</p>
                   <div className="tribe-card__meta">
                     {[['Festival', t.festival], ['Shawl', t.shawl]].map(([k, v]) => (

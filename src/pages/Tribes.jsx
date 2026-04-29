@@ -57,7 +57,8 @@ export default function Tribes() {
           {TRIBES.map(t => (
             <div
               key={t.num}
-              className={`tribe-card ${active === t.num ? 'tribe-card--open' : ''} reveal`}
+              className="tribe-card reveal"
+              data-active={active === t.num}
               style={{ '--tc': t.color }}
               onClick={() => setActive(active === t.num ? null : t.num)}
             >

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
  * Adds .visible to every .reveal element as it enters the viewport.
  * Import and call once at the top of each page component.
  */
-export function useReveal() {
+export function useReveal(deps = []) {
   useEffect(() => {
     const els = document.querySelectorAll('.reveal:not(.visible)');
     const obs = new IntersectionObserver(
@@ -18,5 +18,5 @@ export function useReveal() {
     );
     els.forEach(el => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, deps);
 }

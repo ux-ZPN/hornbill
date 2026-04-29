@@ -28,7 +28,7 @@
 }
 
 .tribe-card:hover { background: rgba(196,130,10,0.04); }
-.tribe-card--open { background: rgba(196,130,10,0.06); }
+.tribe-card[data-active="true"] { background: rgba(196,130,10,0.06); }
 
 .tribe-card__accent {
   position: absolute;
@@ -41,7 +41,7 @@
 }
 
 .tribe-card:hover .tribe-card__accent,
-.tribe-card--open .tribe-card__accent { transform: scaleX(1); }
+.tribe-card[data-active="true"] .tribe-card__accent { transform: scaleX(1); }
 
 .tribe-card__header {
   display: flex;

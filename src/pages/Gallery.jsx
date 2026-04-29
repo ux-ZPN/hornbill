@@ -240,9 +240,9 @@ function GalleryTile({ item }) {
 }
 
 export default function Gallery() {
-  useReveal();
   const [cat, setCat] = useState('all');
   const [lightbox, setLightbox] = useState(null);
+  useReveal([cat]);
 
   const filtered = cat === 'all' ? GALLERY_ITEMS : GALLERY_ITEMS.filter(i => i.cat === cat);
   const current  = GALLERY_ITEMS.find(i => i.id === lightbox);

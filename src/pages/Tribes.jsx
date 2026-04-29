@@ -79,23 +79,21 @@ export default function Tribes() {
                   <path d="M4 7L9 12L14 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               </div>
-              {active === t.num && (
-                <div className="tribe-card__body" onClick={(e) => e.stopPropagation()}>
-                  <p className="tribe-card__desc">{t.desc}</p>
-                  <div className="tribe-card__meta">
-                    {[['Festival', t.festival], ['Shawl', t.shawl]].map(([k, v]) => (
-                      <div key={k} className="tribe-card__meta-item">
-                        <span className="tribe-card__meta-label">{k}</span>
-                        <span className="tribe-card__meta-val">{v}</span>
-                      </div>
-                    ))}
-                    <div className="tribe-card__meta-item tribe-card__meta-item--full">
-                      <span className="tribe-card__meta-label">Known For</span>
-                      <span className="tribe-card__meta-val">{t.known}</span>
+              <div className="tribe-card__body" onClick={(e) => e.stopPropagation()}>
+                <p className="tribe-card__desc">{t.desc}</p>
+                <div className="tribe-card__meta">
+                  {[['Festival', t.festival], ['Shawl', t.shawl]].map(([k, v]) => (
+                    <div key={k} className="tribe-card__meta-item">
+                      <span className="tribe-card__meta-label">{k}</span>
+                      <span className="tribe-card__meta-val">{v}</span>
                     </div>
+                  ))}
+                  <div className="tribe-card__meta-item tribe-card__meta-item--full">
+                    <span className="tribe-card__meta-label">Known For</span>
+                    <span className="tribe-card__meta-val">{t.known}</span>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

@@ -1,19 +1,48 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { useReveal } from '../hooks/useReveal';
 import { QRCodeSVG } from 'qrcode.react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import './Tickets.css'; 
 
 export default function BookingSuccess() {
   useReveal();
   const location = useLocation();
   const { state } = location;
+  const ticketRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
 
   if (!state || !state.bookingRef) {
     return <Navigate to="/tickets" replace />;
   }
 
   const { ticket, quantity, userEmail, bookingRef, bookingDate } = state;
+
+  const downloadTicket = async () => {
+    if (!ticketRef.current) return;
+    try {
+      setDownloading(true);
+      const canvas = await html2canvas(ticketRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0a0604'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`hornbill-ticket-${bookingRef.substring(0,8)}.pdf`);
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      alert('Could not generate PDF. Please try printing the page instead.');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="tickets-page" style={{ paddingBottom: '4rem' }}>
@@ -28,7 +57,7 @@ export default function BookingSuccess() {
           <rect width="1440" height="400" fill="url(#tkp)" opacity="0.6"/>
         </svg>
         <div style={{ position:'relative', zIndex:1, textAlign: 'center' }} className="reveal">
-          <div className="page-hero-eyebrow" style={{ color: 'var(--vermilion)' }}>Payment Successful!</div>
+          <div className="page-hero-eyebrow" style={{ color: '#E04E39' }}>Payment Successful!</div>
           <h1 className="page-hero-title" style={{ fontSize: '3rem', margin: '1rem 0' }}>See You at<br /><span>Kisama</span></h1>
           <p style={{ color: 'var(--cream-dark)', maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem' }}>
             Your booking is confirmed. Below are your official ticket details. Check your email for further instructions.
@@ -42,16 +71,20 @@ export default function BookingSuccess() {
       <div className="reveal" style={{ maxWidth: '800px', margin: '3rem auto', padding: '0 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         
         {/* The Digital Ticket */}
-        <div style={{ 
-          background: 'rgba(0,0,0,0.4)', 
-          border: '1px solid rgba(196,130,10,0.3)', 
-          borderRadius: '12px', 
-          width: '100%', 
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative'
-        }}>
+        <div 
+          id="ticket-download-area"
+          ref={ticketRef}
+          style={{ 
+            background: '#120d07', 
+            border: '1px solid rgba(196,130,10,0.3)', 
+            borderRadius: '12px', 
+            width: '100%', 
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative'
+          }}
+        >
            {/* Notches for authentic ticket look */}
            <div style={{ position: 'absolute', top: '150px', left: '-15px', width: '30px', height: '30px', background: 'var(--bg-dark)', borderRadius: '50%', borderRight: '1px solid rgba(196,130,10,0.3)' }} />
            <div style={{ position: 'absolute', top: '150px', right: '-15px', width: '30px', height: '30px', background: 'var(--bg-dark)', borderRadius: '50%', borderLeft: '1px solid rgba(196,130,10,0.3)' }} />
@@ -102,11 +135,16 @@ export default function BookingSuccess() {
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '1rem', width: '100%', marginTop: '3rem', flexWrap: 'wrap' }}>
-          <button onClick={() => window.print()} className="btn-outline" style={{ flex: 1, justifyContent: 'center' }}>
+          <button 
+            onClick={downloadTicket} 
+            className="btn-outline" 
+            style={{ flex: 1, justifyContent: 'center' }}
+            disabled={downloading}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Download PDF
+            {downloading ? 'Generating PDF...' : 'Download PDF'}
           </button>
           
           <button onClick={() => alert('An extra copy of the ticket will be dispatched to ' + userEmail)} className="btn-solid" style={{ flex: 1, justifyContent: 'center' }}>

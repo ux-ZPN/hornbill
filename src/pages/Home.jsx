@@ -14,7 +14,15 @@ function useFeathers(containerRef) {
       f.className = 'home-feather';
       const c = colors[Math.floor(Math.random() * colors.length)];
       const dur = Math.random() * 6 + 4;
-      f.style.cssText = `left:${Math.random()*100}%;background:${c};height:${Math.random()*14+4}px;animation-duration:${dur}s;animation-delay:${Math.random()*2}s`;
+      const size = Math.random() * 15 + 10;
+      
+      f.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="${c}" width="${size}" height="${size}" style="transform: rotate(${Math.random() * 360}deg)">
+          <path d="M12 2C12 2 11 5 11 9C11 13 13 17 13 17C13 17 16 19 18 20C19 21 19 22 18 22C17 22 15 21 13 20C11 19 9 17 8 15C7 13 6 10 6 7C6 4 9 2 12 2ZM12 2C12 2 13 5 13 9C13 13 11 17 11 17C11 17 8 19 6 20C5 21 5 22 6 22C7 22 9 21 11 20C13 19 15 17 16 15C17 13 18 10 18 7C18 4 15 2 12 2Z" />
+        </svg>
+      `;
+      
+      f.style.cssText = `left:${Math.random()*100}%;animation-duration:${dur}s;animation-delay:${Math.random()*2}s`;
       container.appendChild(f);
       setTimeout(() => f.remove(), (dur + 2) * 1000);
     };
@@ -61,7 +69,7 @@ export default function Home() {
   const heroRef = useRef(null);
   useFeathers(heroRef);
   useReveal();
-  const time = useCountdown('2025-12-01T00:00:00+05:30');
+  const time = useCountdown('2026-12-01T00:00:00+05:30');
 
   /* parallax hills */
   useEffect(() => {
@@ -121,7 +129,7 @@ export default function Home() {
             <span>Festival</span>
           </h1>
           <p className="home-hero__subtitle">Festival of Festivals — Where 17 Tribes Become One</p>
-          <div className="home-hero__date">December 1–10, 2025 · Kisama Heritage Village</div>
+          <div className="home-hero__date">December 1–10, 2026 · Kisama Heritage Village</div>
           <div className="home-hero__actions">
             <Link to="/tickets" className="btn-solid">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1L15 8L8 15M1 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>

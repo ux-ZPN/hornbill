@@ -131,8 +131,6 @@
 /* ── FEATHER PARTICLES ─────────────────── */
 .home-feather {
   position: absolute;
-  width: 3px;
-  border-radius: 50%;
   pointer-events: none;
   animation: featherFall linear infinite;
   opacity: 0;

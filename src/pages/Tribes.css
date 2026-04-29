@@ -117,33 +117,18 @@
 }
 
 .tribe-card__body {
-  position: absolute;
-  top: 100%;
-  left: -1px;
-  right: -1px;
+  position: relative;
   background: #120d07;
   padding: 0 1.8rem 1.8rem;
-  border: 1px solid var(--ochre);
-  border-top: none;
   z-index: 100;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.9);
-  pointer-events: auto;
-  
-  transform-origin: top;
-  animation: expandBody 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), padding 0.5s;
 }
 
-@keyframes expandBody {
-  from { 
-    opacity: 0; 
-    transform: translateY(-10px) scaleY(0.95);
-    filter: blur(4px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scaleY(1);
-    filter: blur(0);
-  }
+.tribe-card[data-active="true"] .tribe-card__body {
+  max-height: 600px; /* Large enough to fit content */
+  padding-bottom: 1.8rem;
 }
 
 .tribe-card__desc {

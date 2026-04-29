@@ -10,6 +10,7 @@ import Gallery    from './pages/Gallery';
 import Tickets    from './pages/Tickets';
 import BookingSuccess from './pages/BookingSuccess';
 import Location   from './pages/Location';
+import NotFound   from './pages/NotFound';
 import { useCursor } from './hooks/useCursor';
 import './styles/globals.css';
 
@@ -42,13 +43,7 @@ function AppInner() {
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/location"   element={<Location />} />
           {/* 404 fallback */}
-          <Route path="*" element={
-            <div style={{ minHeight:'80vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'2rem', background:'var(--bg-dark)' }}>
-              <div style={{ fontFamily:"'Cinzel Decorative',serif", fontSize:'6rem', color:'var(--ochre)', opacity:0.15, lineHeight:1 }}>404</div>
-              <h1 style={{ fontFamily:"'Cinzel Decorative',serif", fontSize:'2rem', color:'var(--cream)' }}>Page Not Found</h1>
-              <a href="/" className="btn-outline">Return Home</a>
-            </div>
-          }/>
+          <Route path="*"           element={<NotFound />} />
         </Routes>
       </main>
 

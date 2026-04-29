@@ -67,33 +67,18 @@ export default function Tickets() {
     const qty = selectedQty;
     
     try {
-      // 1. Attempt to insert booking
-      const { data: insertedData, error: bookingError } = await supabase
-        .from('bookings')
-        .insert({
-          ticket_id: selectedTicket.id,
-          user_id: user.id,
-          quantity: qty,
-          total_price: selectedTicket.price * qty,
-          status: 'confirmed'
-        })
-        .select('id')
-        .single();
-        
-      if (bookingError && bookingError.code !== '42P01') { // Ignore if table doesn't exist
-        throw bookingError;
-      }
+      // Use Supabase RPC to handle the booking and seat decrement atomically
+      const { data, error } = await supabase.rpc('confirm_booking', {
+        p_ticket_id: selectedTicket.id,
+        p_user_id: user.id,
+        p_quantity: qty,
+        p_total_price: selectedTicket.price * qty
+      });
 
-      const bookingRef = insertedData?.id || `HB-${Math.random().toString(36).substring(2,10).toUpperCase()}`;
+      if (error) throw error;
 
-      // 2. Update seats left
-      const newSeats = Math.max(0, selectedTicket.seats_left - qty);
-      const { error: updateError } = await supabase
-        .from('tickets')
-        .update({ seats_left: newSeats })
-        .eq('id', selectedTicket.id);
-
-      if (updateError) throw updateError;
+      const bookingId = data.booking_id;
+      const bookingRef = `HB-${bookingId.substring(0,8).toUpperCase()}`;
 
       setShowBookingModal(false);
       setSelectedTicket(null);
@@ -113,7 +98,12 @@ export default function Tickets() {
       
     } catch (err) {
       console.error('Booking failed:', err.message);
-      alert('Failed to book: ' + err.message);
+      // Fallback if RPC fails (e.g. not created yet)
+      if (err.message.includes('confirm_booking')) {
+         alert('Booking system error: The secure booking function is missing. Please contact support.');
+      } else {
+         alert('Failed to book: ' + err.message);
+      }
     }
   };
 

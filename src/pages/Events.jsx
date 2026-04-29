@@ -19,6 +19,27 @@ const BADGE_COLORS = {
   sport:   '#4CAF50',
 };
 
+const FALLBACK_EVENTS = [
+  { day:'01', month:'Dec', time:'10:00 AM', type:'ritual',  title:'Grand Opening Ceremony',         sub:'Chief Minister\'s Inauguration · Kisama Main Stage' },
+  { day:'01', month:'Dec', time:'03:00 PM', type:'culture', title:'Heritage Village Inauguration',   sub:'All 17 Tribe Morung Opens · Heritage Ground' },
+  { day:'02', month:'Dec', time:'09:00 AM', type:'culture', title:'Warrior Dance Showcase',          sub:'All 17 Tribes Perform · Open Grounds' },
+  { day:'02', month:'Dec', time:'06:00 PM', type:'music',   title:'Traditional Folk Music Evening',  sub:'Log Drums & Bamboo Flute · Amphitheatre' },
+  { day:'03', month:'Dec', time:'10:00 AM', type:'sport',   title:'Traditional Archery Tournament',  sub:'Inter-Tribe Competition · Archery Range' },
+  { day:'03', month:'Dec', time:'04:00 PM', type:'culture', title:'Naga Cuisine Festival',           sub:'All-tribe cooking competition · Food Court' },
+  { day:'04', month:'Dec', time:'09:00 AM', type:'culture', title:'Traditional Weaving Exhibition',  sub:'Master Weavers at Looms · Craft Village' },
+  { day:'04', month:'Dec', time:'07:00 PM', type:'music',   title:'Fire & Drum Night',               sub:'Tribal percussion concert · Main Stage' },
+  { day:'05', month:'Dec', time:'10:00 AM', type:'sport',   title:'Wrestling & Strength Games',      sub:'Inter-Tribe · Sports Ground' },
+  { day:'05', month:'Dec', time:'05:00 PM', type:'culture', title:'Naga Headgear Display',           sub:'Headdress Exhibition · Heritage Gallery' },
+  { day:'06', month:'Dec', time:'06:30 PM', type:'ritual',  title:'Fire of Unity Ceremony',          sub:'Ancient Fire Ritual · Sacred Grounds' },
+  { day:'07', month:'Dec', time:'09:00 AM', type:'culture', title:'Morung Art Workshop',             sub:'Open to Visitors · Heritage Village' },
+  { day:'07', month:'Dec', time:'07:00 PM', type:'music',   title:'Northeast Rock Concert',          sub:'Indie & Rock Bands · Main Stage' },
+  { day:'08', month:'Dec', time:'10:00 AM', type:'sport',   title:'Spear-Throwing Contest',          sub:'Inter-Tribe · Open Ground' },
+  { day:'08', month:'Dec', time:'07:00 PM', type:'music',   title:'Battle of Bands',                 sub:'Northeast\'s Finest · Main Stage' },
+  { day:'09', month:'Dec', time:'11:00 AM', type:'ritual',  title:'Sacred Naga Feast',               sub:'Community Ceremonial Meal · Heritage Ground' },
+  { day:'09', month:'Dec', time:'06:00 PM', type:'culture', title:'Storytelling Night',              sub:'Tribal Elders · Firepit Stage' },
+  { day:'10', month:'Dec', time:'05:00 PM', type:'ritual',  title:'Grand Closing Ceremony',          sub:'Cultural Finale & Fireworks · Kisama' },
+];
+
 export default function Events() {
   useReveal();
   const [events, setEvents] = useState([]);
@@ -35,11 +56,15 @@ export default function Events() {
           .order('day', { ascending: true });
         
         if (error) throw error;
-        if (data) setEvents(data);
+        if (data && data.length > 0) {
+          setEvents(data);
+        } else {
+          setEvents(FALLBACK_EVENTS);
+        }
       } catch (err) {
         console.error('Error fetching events:', err.message);
-        // Fallback to empty if table doesn't exist yet
-        setEvents([]);
+        // Fallback to hardcoded data if table doesn't exist
+        setEvents(FALLBACK_EVENTS);
       } finally {
         setLoading(false);
       }

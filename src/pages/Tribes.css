@@ -28,20 +28,16 @@
   background: var(--bg-dark);
 }
 
-.tribe-card:hover { 
-  background: rgba(196,130,10,0.04); 
+.tribe-card:hover {
+  background: rgba(196,130,10,0.04);
   border-color: rgba(196,130,10,0.3);
 }
 
-.tribe-card[data-active="true"] { 
-  z-index: 100;
-  overflow: visible;
-  background: #120d07; /* Richer dark background */
+.tribe-card[data-active="true"] {
+  z-index: 10;
+  background: #120d07;
   border-color: var(--ochre);
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 20px 50px rgba(0,0,0,0.8),
-    0 0 0 1px var(--ochre);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .tribe-card__accent {
@@ -116,18 +112,19 @@
   opacity: 1;
 }
 
+/* Collapsed: max-height 0, no padding, hidden overflow */
 .tribe-card__body {
-  position: relative;
   background: #120d07;
-  padding: 0 1.8rem 1.8rem;
-  z-index: 100;
+  padding: 0 1.8rem;
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), padding 0.5s;
+  transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              padding-bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Expanded: reveal content */
 .tribe-card[data-active="true"] .tribe-card__body {
-  max-height: 600px; /* Large enough to fit content */
+  max-height: 600px;
   padding-bottom: 1.8rem;
 }
 
